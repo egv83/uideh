@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+        
+        <h:form id="frmGrado">
+            <div style="text-align: center;">
+                <h2>GRADO</h2>
+            </div>
+            <p:dataTable id="dtGrado" value="#{gradoControl.listaGrado}" var="grado" widgetVar="wd_Grado"
+                         selectionMode="single" selection="#{gradoControl.gradoSelect}" rowKey="#{grado.idgrado}" 
+                         emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10">
+
+                <p:ajax event="rowSelect" update=":frmGrado:dtGrado" />
+
+                <p:column headerText="#{etiquetas.DataTableDescripcion}" filterBy="#{grado.nombre}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.DataTableDescripcion}" />
+                    </f:facet>
+                    <h:outputText value="#{grado.nombre}"/>
+                </p:column>
+                <p:column width="50" rendered="#{!empty gradoControl.gradoSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{gradoControl.estadoBoton('m')}" actionListener="#{gradoControl.seleciondo()}" update="frmDialog,:frmGrado:dtGrado" onclick="PF('dlGrado').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{gradoControl.eliminar}" update=":growl,:frmGrado:dtGrado"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{gradoControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlGrado').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlGrado" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{gradoControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid id="pgGrado" columns="3">
+                    <p:outputLabel value="#{etiquetas.DataTableDescripcion}"/>
+                    <p:inputText id="txtDescripcion" value="#{gradoControl.grado.nombre}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtDescripcion" display="icon" />
+                </h:panelGrid>
+                
+                <p:separator />
+                
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{gradoControl.accionBoton}" actionListener="#{gradoControl.grabar}" 
+                                 update="frmDialog,:frmGrado:dtGrado,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!gradoControl.accionBoton}" actionListener="#{gradoControl.modificar()}" 
+                                 update="frmDialog,:frmGrado:dtGrado,:growl" process="frmDialog" icon="ui-icon-disk" oncomplete="PF('dlGrado').hide();" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

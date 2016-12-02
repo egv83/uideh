@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmDesInves">
+            <div style="text-align: center;">
+                <h2>DESARROLLO DE LA INVESTIGACIÓN</h2>
+            </div>
+
+            <p:dataTable id="dtDesInves" selectionMode="single" value="#{desarrolloInvestigacionControl.listaDesaInvestigacion}"
+                         var="desInves" emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10"
+                         selection="#{desarrolloInvestigacionControl.desainvestigacionSelect}" rowKey="#{desInves.iddesainvestigacion}">
+
+                <p:ajax event="rowSelect" update=":frmDesInves:dtDesInves" />
+
+                <p:column headerText="#{etiquetas.etiquetaVariable}" filterBy="#{desInves.variable}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaVariable}" />
+                    </f:facet>
+                    <h:outputText value="#{desInves.variable}"/>
+                </p:column>
+                <p:column headerText="#{etiquetas.etiquetaPuntaje}" filterBy="#{desInves.ponderacion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaPuntaje}" />
+                    </f:facet>
+                    <h:outputText value="#{desInves.ponderacion}"/>
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty desarrolloInvestigacionControl.desainvestigacionSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{desarrolloInvestigacionControl.estadoBoton('m')}" actionListener="#{desarrolloInvestigacionControl.seleciondo()}" update="frmDialog,:frmDesInves:dtDesInves" onclick="PF('dlDesInves').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{desarrolloInvestigacionControl.eliminar}" update=":growl,:frmDesInves:dtDesInves"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{desarrolloInvestigacionControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlDesInves').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlDesInves" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{desarrolloInvestigacionControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+
+                    <p:outputLabel value="#{etiquetas.etiquetaVariable}"/>
+                    <p:inputText id="txtVariable" value="#{desarrolloInvestigacionControl.desaInvestigacion.variable}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtVariable" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaPuntaje}"/>
+                    <p:inputText id="txtPuntaje" value="#{desarrolloInvestigacionControl.desaInvestigacion.ponderacion}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtPuntaje" display="icon" />
+
+
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{desarrolloInvestigacionControl.accionBoton}" actionListener="#{desarrolloInvestigacionControl.grabar()}" 
+                                 update="frmDialog,:frmDesInves:dtDesInves,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!desarrolloInvestigacionControl.accionBoton}" actionListener="#{desarrolloInvestigacionControl.modificar()}" 
+                                 update="frmDialog,:frmDesInves:dtDesInves,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

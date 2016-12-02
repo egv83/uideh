@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmActPro">
+            <div style="text-align: center;">
+                <h2>ACTIVIDADES PRODUCTIVAS</h2>
+            </div>
+
+            <p:dataTable id="dtActPro" selectionMode="single" value="#{actividadesProductivasControl.listaActproductivas}"
+                         var="actPro" emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10"
+                         selection="#{actividadesProductivasControl.actProductivasSelect}" rowKey="#{actPro.idactproductivas}">
+
+                <p:ajax event="rowSelect" update=":frmActPro:dtActPro" />
+
+                <p:column headerText="#{etiquetas.etiquetaVariable}" filterBy="#{actPro.variable}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaVariable}" />
+                    </f:facet>
+                    <h:outputText value="#{actPro.variable}"/>
+                </p:column>
+                <p:column headerText="#{etiquetas.etiquetaPuntaje}" filterBy="#{actPro.ponderacion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaPuntaje}" />
+                    </f:facet>
+                    <h:outputText value="#{actPro.ponderacion}"/>
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty actividadesProductivasControl.actProductivasSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{actividadesProductivasControl.estadoBoton('m')}" actionListener="#{actividadesProductivasControl.seleciondo()}" update="frmDialog,:frmActPro:dtActPro" onclick="PF('dlActPro').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{actividadesProductivasControl.eliminar}" update=":growl,:frmActPro:dtActPro"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{actividadesProductivasControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlActPro').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlActPro" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{actividadesProductivasControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+
+                    <p:outputLabel value="#{etiquetas.etiquetaVariable}"/>
+                    <p:inputText id="txtVariable" value="#{actividadesProductivasControl.actProductivas.variable}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtVariable" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaPuntaje}"/>
+                    <p:inputText id="txtPuntaje" value="#{actividadesProductivasControl.actProductivas.ponderacion}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtPuntaje" display="icon" />
+
+
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{actividadesProductivasControl.accionBoton}" actionListener="#{actividadesProductivasControl.grabar()}" 
+                                 update="frmDialog,:frmActPro:dtActPro,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!actividadesProductivasControl.accionBoton}" actionListener="#{actividadesProductivasControl.modificar()}" 
+                                 update="frmDialog,:frmActPro:dtActPro,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

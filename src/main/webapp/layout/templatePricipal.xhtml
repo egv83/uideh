@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:loadBundle basename="Etiquetas" var="etiquetas" />
+    
+    <h:head>
+        <title>UIDEH</title>
+        <f:event type="preRenderView" listener="#{loginBean.verificarSesion()}" />
+    </h:head>
+
+    <h:body>
+        <p:growl id="msg" showDetail="true" life="8000" />
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="60" style="font-size: small;">
+                <h:form id="frmHeader">
+                    <p:toolbar style="height: 25px;">
+                        <f:facet name="right">
+                            <p:commandLink value="Logour" action="#{loginBean.logout}" />
+                        </f:facet>
+                    </p:toolbar>
+                </h:form>
+            </p:layoutUnit>
+
+            <!--<p:layoutUnit position="west" size="350" style="font-size: small;">
+                <ui:include src="/layout/menu.xhtml" />
+            </p:layoutUnit>-->
+
+            <p:layoutUnit position="center" style="font-size: x-small;">
+                <p:growl id="growl" showDetail="true" life="3000" />
+                <ui:insert name="body" />
+            </p:layoutUnit>
+        </p:layout>
+
+    </h:body>
+
+</html>

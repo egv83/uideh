@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmVerifInfor">
+            <div style="text-align: center;">
+                <h2>VERIFICAR INFORMACIÓN</h2>
+            </div>
+
+            <p:dataTable id="dtVerifInfor" widgetVar="wdVerifInfor" selectionMode="single" value="#{verificarInformacionControl.listaVerifinformacions}"
+                         var="Verifinformacions" emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10"
+                         selection="#{verificarInformacionControl.verifinformacionSelect}" rowKey="#{Verifinformacions.idverifinformacion}">
+
+                <p:ajax event="rowSelect" update=":frmVerifInfor:dtVerifInfor" />
+
+                <p:column headerText="#{etiquetas.etiquetaVariable}" filterBy="#{Verifinformacions.variable}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaVariable}" />
+                    </f:facet>
+                    <h:outputText value="#{Verifinformacions.variable}"/>
+                </p:column>
+                <p:column headerText="#{etiquetas.etiquetaPuntaje}" filterBy="#{Verifinformacions.ponderacion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaPuntaje}" />
+                    </f:facet>
+                    <h:outputText value="#{Verifinformacions.ponderacion}"/>
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty verificarInformacionControl.verifinformacionSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{verificarInformacionControl.estadoVerificaInfor('m')}" actionListener="#{verificarInformacionControl.seleciondo()}" update="frmDialog,:frmVerifInfor:dtVerifInfor" onclick="PF('dlVerificar').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{verificarInformacionControl.eliminar}" update=":growl,:frmVerifInfor:dtVerifInfor"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{verificarInformacionControl.estadoVerificaInfor('n')}" update="frmDialog" onclick="PF('dlVerificar').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlVerificar" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{verificarInformacionControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+
+                    <p:outputLabel value="#{etiquetas.etiquetaVariable}"/>
+                    <p:inputText id="txtVariable" value="#{verificarInformacionControl.verifinformacion.variable}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtVariable" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaPuntaje}"/>
+                    <p:inputText id="txtPuntaje" value="#{verificarInformacionControl.verifinformacion.ponderacion}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtPuntaje" display="icon" />
+
+
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{verificarInformacionControl.accionBoton}" actionListener="#{verificarInformacionControl.grabar()}" 
+                                 update="frmDialog,:frmVerifInfor:dtVerifInfor,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!verificarInformacionControl.accionBoton}" actionListener="#{verificarInformacionControl.modificar()}" 
+                                 update="frmDialog,:frmVerifInfor:dtVerifInfor,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

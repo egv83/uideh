@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmPresProy">
+            <div style="text-align: center;">
+                <h2>PRESENTACIÓN PROYECTO DE INVESTIGACIÓN</h2>
+            </div>
+
+            <p:dataTable id="dtPresProy" selectionMode="single" value="#{presentacionProyectoControl.listaPresProyecto}"
+                         var="presProy" emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10"
+                         selection="#{presentacionProyectoControl.presProyectoSelect}" rowKey="#{presProy.idpresproyecto}">
+
+                <p:ajax event="rowSelect" update=":frmPresProy:dtPresProy" />
+
+                <p:column headerText="#{etiquetas.etiquetaVariable}" filterBy="#{presProy.variable}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaVariable}" />
+                    </f:facet>
+                    <h:outputText value="#{presProy.variable}"/>
+                </p:column>
+                <p:column headerText="#{etiquetas.etiquetaPuntaje}" filterBy="#{presProy.ponderacion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaPuntaje}" />
+                    </f:facet>
+                    <h:outputText value="#{presProy.ponderacion}"/>
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty presentacionProyectoControl.presProyectoSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{presentacionProyectoControl.estadoBoton('m')}" actionListener="#{presentacionProyectoControl.seleciondo()}" update="frmDialog,:frmPresProy:dtPresProy" onclick="PF('dlPresProy').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{presentacionProyectoControl.eliminar}" update=":growl,:frmPresProy:dtPresProy"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{presentacionProyectoControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlPresProy').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlPresProy" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{presentacionProyectoControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+
+                    <p:outputLabel value="#{etiquetas.etiquetaVariable}"/>
+                    <p:inputText id="txtVariable" value="#{presentacionProyectoControl.presProyecto.variable}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtVariable" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaPuntaje}"/>
+                    <p:inputText id="txtPuntaje" value="#{presentacionProyectoControl.presProyecto.ponderacion}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtPuntaje" display="icon" />
+
+
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{presentacionProyectoControl.accionBoton}" actionListener="#{presentacionProyectoControl.grabar()}" 
+                                 update="frmDialog,:frmPresProy:dtPresProy,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!presentacionProyectoControl.accionBoton}" actionListener="#{presentacionProyectoControl.modificar()}" 
+                                 update="frmDialog,:frmPresProy:dtPresProy,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    
+    <f:loadBundle basename="Etiquetas" var="etiquetas" />
+    
+    <h:head>
+        <title>UIDEH</title>
+        <f:event type="preRenderView" listener="#{loginBean.verificarSesion()}" />
+        
+    </h:head>
+
+    <h:body>
+        <h:form>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </h:form>
+        <!-- <p:growl id="growl" showDetail="true" life="3000" /> -->
+        
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="50" style="font-size: small;">
+                <!-- <h:outputText value="North unit content." /> -->
+                <h:form id="frmHeader">
+                    <p:toolbar style="height: 25px;">
+                        <f:facet name="right">
+                            <p:commandLink value="Logout" action="#{loginBean.logout()}" />
+                        </f:facet>
+                    </p:toolbar>
+                </h:form>
+            </p:layoutUnit>
+
+            <!--<p:layoutUnit position="south" size="40" style="font-size: small;">
+                <h:outputText value="South unit content." />
+            </p:layoutUnit>-->
+
+            <p:layoutUnit position="west" size="350" style="font-size: small;">
+                <!--<h:outputText value="West unit content." />-->
+                <ui:include src="/layout/menu.xhtml" />
+            </p:layoutUnit>
+
+            <!--<p:layoutUnit position="east" size="100" style="font-size: small;">
+                <h:outputText value="Right unit content." />
+            </p:layoutUnit>-->
+
+            <p:layoutUnit position="center" style="font-size: x-small;">
+                <!-- <p:messages id="growl" autoUpdate="true" closable="fals" transient="true" showIcon="true" /> -->
+                <p:growl id="growl" showDetail="true" life="3000" />
+                <ui:insert name="body" />
+                <!--<h:outputText value="Center" />-->
+            </p:layoutUnit>
+        </p:layout>
+
+
+        <!--<script language="javascript" src="#{request.contextPath}/resources/main/js/sh.js"></script>
+        <script language="javascript">
+            SyntaxHighlighter.all();
+        </script>-->
+
+    </h:body>
+
+</html>

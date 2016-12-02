@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmResult">
+            <div style="text-align: center;">
+                <h2>RESULTADOS</h2>
+            </div>
+
+            <p:dataTable id="dtResult" selectionMode="single" value="#{resultadosControl.listaResultados}"
+                         var="result" emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10"
+                         selection="#{resultadosControl.resultadosSelect}" rowKey="#{result.idresultados}">
+
+                <p:ajax event="rowSelect" update=":frmResult:dtResult" />
+
+                <p:column headerText="#{etiquetas.etiquetaVariable}" filterBy="#{result.variable}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaVariable}" />
+                    </f:facet>
+                    <h:outputText value="#{result.variable}"/>
+                </p:column>
+                <p:column headerText="#{etiquetas.etiquetaPuntaje}" filterBy="#{result.ponderacion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaPuntaje}" />
+                    </f:facet>
+                    <h:outputText value="#{result.ponderacion}"/>
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty resultadosControl.resultadosSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{resultadosControl.estadoBoton('m')}" actionListener="#{resultadosControl.seleciondo()}" update="frmDialog,:frmResult:dtResult" onclick="PF('dlResult').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{resultadosControl.eliminar}" update=":growl,:frmResult:dtResult"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{resultadosControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlResult').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlResult" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{resultadosControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+
+                    <p:outputLabel value="#{etiquetas.etiquetaVariable}"/>
+                    <p:inputText id="txtVariable" value="#{resultadosControl.resultados.variable}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtVariable" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaPuntaje}"/>
+                    <p:inputText id="txtPuntaje" value="#{resultadosControl.resultados.ponderacion}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtPuntaje" display="icon" />
+
+
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{resultadosControl.accionBoton}" actionListener="#{resultadosControl.grabar()}" 
+                                 update="frmDialog,:frmResult:dtResult,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!resultadosControl.accionBoton}" actionListener="#{resultadosControl.modificar()}" 
+                                 update="frmDialog,:frmResult:dtResult,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

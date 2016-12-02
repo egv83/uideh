@@ -1,0 +1,267 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/layout/templatePricipal.xhtml">
+        <ui:define name="body">
+            <h:form id="frmCalifica">
+
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton value="#{etiquetas.BtNuevo}" icon="ui-icon-document" />
+                        <p:commandButton value="#{etiquetas.BtGrabar}" actionListener="#{calificarControl.grabar()}" 
+                                         update=":growl, :frmCalifica" icon="ui-icon-disk" process="@this" />
+                    </f:facet>
+                </p:toolbar>
+
+                <h:panelGrid id="pGrid" columns="7" >
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Fecha:" />
+                        <p:outputLabel value="#{calificarControl.matriz.fecha}" >
+                            <f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+                        </p:outputLabel>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Agente:" />
+                        <p:inputText id="txtAgente" value="#{calificarControl.selectedAgente.idagente==null ?'Click aquí': calificarControl.agenteNombre}" 
+                                     size="30" onclick="PF('dlAgente').show();" >
+                            <p:ajax update="frmDialog" />
+                        </p:inputText>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Caso:" />
+                        <p:inputText id="txtCaso" value="#{calificarControl.matriz.caso}" />
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Detalle:" />
+                        <p:inputTextarea id="txtDetalle" value="#{calificarControl.matriz.detalle}" cols="40" />
+                    </h:panelGrid>
+
+                    <p:spacer width="30" />
+
+                    <h:panelGrid columns="4" id="pgNota">
+                        <p:outputLabel value="Verif Infor" />
+                        <p:inputText value="#{calificarControl.sumaVerInf}"/>
+
+                        <p:outputLabel value="Desarrollo Oper" />
+                        <p:inputText value="#{calificarControl.sumaDesOper}"/>
+
+                        <p:outputLabel value="Resulados Flag" />
+                        <p:inputText value="#{calificarControl.sumaResult}"/>
+
+                        <p:outputLabel value="Result Flag" />
+                        <p:inputText value="#{calificarControl.tmpResultFlag}" />
+
+                        <p:outputLabel value="Pres Invest" />
+                        <p:inputText value="#{calificarControl.sumaPresProy}"/>
+
+                        <p:outputLabel value="Auto Proyect" />
+                        <p:inputText value="#{calificarControl.sumaAutProyect}"/>
+
+                        <p:outputLabel value="Inicio Invest" />
+                        <p:inputText value="#{calificarControl.sumaInicioInvest}"/>
+
+                        <p:outputLabel value="Desa Invest" />
+                        <p:inputText value="#{calificarControl.sumaDesaInvestig}"/>
+
+                        <p:outputLabel value="Desa Oper" />
+                        <p:inputText value="#{calificarControl.sumaDesaOperativ}"/>
+
+                        <p:outputLabel value="Result Inves" />
+                        <p:inputText value="#{calificarControl.sumaResultInv}"/>
+
+                        <p:outputLabel value="Result Inves" />
+                        <p:inputText value="#{calificarControl.tmpResultInvest}" />
+
+                        <p:outputLabel value="Activ Product" />
+                        <p:inputText value="#{calificarControl.sumaActProduct}"/>
+
+                        <p:outputLabel value="Nota:" />
+                        <p:inputText id="txtNota" value="#{calificarControl.total}" />
+
+                        <p:outputLabel value="SUMATORIA FLAG:" />
+                        <p:inputText value="#{calificarControl.sumatoriaFlagrancia}" />
+
+                        <p:outputLabel value="TOTAL FLAG:" />
+                        <p:inputText value="#{calificarControl.totalFlag}" />
+
+                        <p:outputLabel value="SUMATORIA INVEST:" />
+                        <p:inputText value="#{calificarControl.sumatoriaProyectoInvestig}" />
+
+                        <p:outputLabel value="TOTAL INVEST:" />
+                        <p:inputText value="#{calificarControl.totalInvest}" />
+
+                        <p:outputLabel value="INVEST MAYOR 20:" />
+                        <p:inputText value="#{calificarControl.investMayor}" />
+
+                        <p:outputLabel value="SUMATORIA ACT PRODUCT:" />
+                        <p:inputText value="#{calificarControl.sumaActProduct}" />
+
+                        <p:outputLabel value="TOTAL ACT PRODUCR:" />
+                        <p:inputText value="#{calificarControl.totalActivProduct}" />
+
+                        <p:outputLabel value="JEFE:" />
+                        <p:outputLabel value="#{calificarControl.selectedAgente.jefe}" />
+
+                        <p:outputLabel value="FLAG 2:" />
+                        <p:outputLabel value="#{calificarControl.flagDos}" />
+
+                    </h:panelGrid>
+
+                </h:panelGrid>
+
+                <p:separator />
+                <p:tabView id="tbVariables" >
+                    <p:tab id="tbFlag" title="Flagrancia" >
+                        <p:panelGrid columns="3" layout="grid">
+
+                            <p:panel header="VERIFICACIÓN DE INFORMACIÓN" >
+
+                                <p:selectManyCheckbox id="slVerInf" value="#{calificarControl.selectedVerifInf}" layout="pageDirection" columns="1">
+                                    <f:selectItems value="#{verificarInformacionControl.listaVerifinformacions}" var="verInf" itemValue="#{verInf.idverifinformacion}" itemLabel="#{verInf.variable}" />
+                                    <p:ajax update="slVerInf,:frmCalifica:pgNota" listener="#{calificarControl.calcularVerInf()}" />
+                                </p:selectManyCheckbox>
+
+                            </p:panel>
+
+                            <p:panel header="DESARROLLO DEL OPERATIVO">
+                                <p:selectManyCheckbox id="slDesOper" value="#{calificarControl.selectedDesOper}" layout="pageDirection" columns="1">
+                                    <f:selectItems value="#{desarrollOperativoControl.listaDesOperativo}" var="desOper" itemValue="#{desOper.iddesoperativo}" itemLabel="#{desOper.variable}" />
+                                    <p:ajax update="slDesOper,:frmCalifica:pgNota" listener="#{calificarControl.calcularDesOper()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+                            <p:panel header="RESULTADOS FLAGRANCIA">
+                                <p:selectManyCheckbox id="slResult" value="#{calificarControl.selectedResult}" layout="grid" columns="2">
+                                    <f:selectItems value="#{resultadosControl.listaResultados}" var="result" itemValue="#{result.idresultados}" itemLabel="#{result.variable}" />
+                                    <p:ajax update="slResult,:frmCalifica:pgNota" listener="#{calificarControl.calcularResult()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab id="tbInvest" title="Investigación">
+                        <p:panelGrid columns="5" layout="grid">
+                            <h:panelGrid columns="1">
+                                <p:panel header="PRESENTACIÓN DEL PROYECTO DE INVESTIGACIÓN" >
+                                    <p:selectManyCheckbox id="slPresProyect" value="#{calificarControl.selectedPresProyect}" layout="pageDirection" columns="1">
+                                        <f:selectItems value="#{presentacionProyectoControl.listaPresproyecto}" var="presProy" itemValue="#{presProy.idpresproyecto}" itemLabel="#{presProy.variable}" />
+                                        <p:ajax update="slPresProyect,:frmCalifica:pgNota" listener="#{calificarControl.calculoPresProyect()}" />
+                                    </p:selectManyCheckbox>
+                                </p:panel>
+
+                                <p:panel header="AUTORIZACIÓN DEL PROYECTO DE INVESTIGACIÓN" >
+                                    <p:selectManyCheckbox id="slAutProyect" value="#{calificarControl.selectedAutProyect}" layout="pageDirection" columns="1">
+                                        <f:selectItems value="#{autorizacionProyectoControl.listaAutoProyecto}" var="autProy" itemValue="#{autProy.idautoproyecto}" itemLabel="#{autProy.variable}" />
+                                        <p:ajax update="slAutProyect,:frmCalifica:pgNota" listener="#{calificarControl.calculoAutoProyect()}" />
+                                    </p:selectManyCheckbox>
+                                </p:panel>
+                            </h:panelGrid>
+
+                            <p:panel header="INICIO DE LA INVESTIGACIÓN PREVIA" >
+                                <p:selectManyCheckbox id="slInInvest" value="#{calificarControl.selectedInicioInvest}" layout="pageDirection" columns="1">
+                                    <f:selectItems value="#{inicioInvestigacionControl.listaInicinvetigacion}" var="InInvest" itemValue="#{InInvest.idinicinvetigacion}" itemLabel="#{InInvest.variable}" />
+                                    <p:ajax update="slInInvest,:frmCalifica:pgNota" listener="#{calificarControl.calculoInicioInvest()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+                            <p:panel header="DESARROLLO DE LA INVESTIGACIÓN" >
+                                <p:selectManyCheckbox id="slDesInvest" value="#{calificarControl.selectedDesaInvestig}" layout="pageDirection" columns="1">
+                                    <f:selectItems value="#{desarrolloInvestigacionControl.listaDesaInvestigacion}" var="DesInvest" itemValue="#{DesInvest.iddesainvestigacion}" itemLabel="#{DesInvest.variable}" />
+                                    <p:ajax update="slDesInvest,:frmCalifica:pgNota" listener="#{calificarControl.calculoDesaInvestig()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+                            <p:panel header="DESARROLLO DEL OPERATIVO" >
+                                <p:selectManyCheckbox id="slDesaOperInv" value="#{calificarControl.selectedDesaOperativ}" layout="pageDirection" columns="1">
+                                    <f:selectItems value="#{desarrollOperativoInvestigacionControl.listaDesaOperativoInv}" var="DesaOperInv" itemValue="#{DesaOperInv.iddesaoperativo}" itemLabel="#{DesaOperInv.variable}" />
+                                    <p:ajax update="slDesaOperInv,:frmCalifica:pgNota" listener="#{calificarControl.calculoDesaOperativ()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+                            <p:panel header="RESULTADOS INVESTIGACIÓN" >
+                                <p:selectManyCheckbox id="slResultInv" value="#{calificarControl.selectedResultInv}" layout="grid" columns="2">
+                                    <f:selectItems value="#{resultadosControl.listaResultados}" var="ResultInv" itemValue="#{ResultInv.idresultados}" itemLabel="#{ResultInv.variable}" />
+                                    <p:ajax update="slResultInv,:frmCalifica:pgNota" listener="#{calificarControl.calculoResultInvest()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab id="tbActProd" title="ACTIVIDADES PRODUCTIVAS">
+                        <p:panelGrid columns="2" layout="grid">
+
+                            <p:panel header="ACTIVIDADES PRODUCTIVAS">
+                                <p:selectManyCheckbox id="slActProduct" value="#{calificarControl.selectedActProduct}" layout="pageDirection" columns="1">
+                                    <f:selectItems value="#{actividadesProductivasControl.listaActproductivas}" var="ActProduct" itemValue="#{ActProduct.idactproductivas}" itemLabel="#{ActProduct.variable}" />
+                                    <p:ajax update="slActProduct,:frmCalifica:pgNota" listener="#{calificarControl.calculoActProduct()}" />
+                                </p:selectManyCheckbox>
+                            </p:panel>
+
+
+                            <p:panel header="FLAGRACIAS">
+                                <h:panelGrid columns="2">
+                                    <p:outputLabel value="Flagrancias dos"/>
+                                    <p:selectBooleanCheckbox id="cBFlag" value="#{calificarControl.flagDos}">
+                                        <p:ajax update="cBFlag,:frmCalifica:pgNota" listener="#{calificarControl.calculoActProduct()}" />
+                                    </p:selectBooleanCheckbox>
+                                </h:panelGrid>
+                            </p:panel>
+
+                        </p:panelGrid>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+
+            <p:dialog modal="false" widgetVar="dlAgente" resizable="false">
+                <h:form id="frmDialog">
+                    <h:panelGrid>
+                        <f:facet name="header">#{etiquetas.etiquetaAgente}</f:facet>
+                    </h:panelGrid>
+                    <p:dataTable id="dtAgente" value="#{agenteControl.listaAgente}" var="agente" paginator="true" rows="10" 
+                                 emptyMessage="#{etiquetas.DataTableNoRegistros}" tableStyle="width:auto" rowKey="#{agente.idagente}" 
+                                 selectionMode="single" selection="#{calificarControl.selectedAgente}" >
+
+                        <p:ajax event="rowSelect" update=":frmCalifica:txtAgente,:frmCalifica:pgNota,:frmCalifica:tbVariables,:growl" listener="#{calificarControl.jefeAgente()}" oncomplete="PF('dlAgente').hide();" />
+
+                        <p:column headerText="#{etiquetas.etiquetaCedula}" filterBy="#{agente.cedula}">
+                            <f:facet name="header">
+                                <h:outputText value="#{etiquetas.etiquetaCedula}" />
+                            </f:facet>
+                            <h:outputText value="#{agente.cedula}"/>
+                        </p:column>
+
+                        <p:column headerText="#{etiquetas.etiquetaNombre}" filterBy="#{agente.nombres}">
+                            <f:facet name="header">
+                                <h:outputText value="#{etiquetas.etiquetaNombre}" />
+                            </f:facet>
+                            <h:outputText value="#{agente.nombres}"/>
+                        </p:column>
+
+                        <p:column headerText="#{etiquetas.etiquetaApellido}" filterBy="#{agente.apellidos}">
+                            <f:facet name="header">
+                                <h:outputText value="#{etiquetas.etiquetaApellido}" />
+                            </f:facet>
+                            <h:outputText value="#{agente.apellidos}"/>
+                        </p:column>
+
+                        <p:column headerText="Jefe" >
+                            <f:facet name="header">
+                                <h:outputText value="Jefe" />
+                            </f:facet>                    
+                            <h:outputText value="#{agente.jefe ?'Si':'No'}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+    </ui:composition>
+</html>

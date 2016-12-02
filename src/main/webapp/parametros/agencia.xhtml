@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+        
+        <h:form id="frmAgencia">
+            <div style="text-align: center;">
+                <h2>AGENCIA</h2>
+            </div>
+            <p:dataTable id="dtAgencia" value="#{agenciaControl.listaAgencia}" var="agencia" widgetVar="wd_Agencia"
+                         selectionMode="single" selection="#{agenciaControl.agenciaSelect}" rowKey="#{agencia.idagencia}" 
+                         emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10">
+
+                <p:ajax event="rowSelect" update=":frmAgencia:dtAgencia" />
+
+                <p:column headerText="#{etiquetas.DataTableDescripcion}" filterBy="#{agencia.nombre}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.DataTableDescripcion}" />
+                    </f:facet>
+                    <h:outputText value="#{agencia.nombre}"/>
+                </p:column>
+                <p:column width="50" rendered="#{!empty agenciaControl.agenciaSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{agenciaControl.estadoAgencia('m')}" actionListener="#{agenciaControl.seleciondo()}" update="frmDialog,:frmAgencia:dtAgencia" onclick="PF('dlAgencia').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{agenciaControl.eliminar}" update=":growl,dtAgencia,:frmAgencia:dtAgencia"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{agenciaControl.estadoAgencia('n')}" update="frmDialog" onclick="PF('dlAgencia').show();" process="@this"/>
+
+            
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlAgencia" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{agenciaControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid id="pgAgencia" columns="3">
+                    <p:outputLabel value="Descripción:"/>
+                    <p:inputText id="txtDescripcion" value="#{agenciaControl.agencia.nombre}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}" />
+                    <p:message for="txtDescripcion" display="icon" />
+                </h:panelGrid>
+                
+                <p:separator />
+                
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{agenciaControl.accionBoton}" actionListener="#{agenciaControl.grabar}" 
+                                 update="frmDialog,:frmAgencia:dtAgencia,:growl" process="frmDialog" icon="ui-icon-disk" />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!agenciaControl.accionBoton}" actionListener="#{agenciaControl.modificar()}" 
+                                 update="frmDialog,:frmAgencia:dtAgencia,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

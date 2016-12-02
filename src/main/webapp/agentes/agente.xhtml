@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmAgente">
+            <div style="text-align: center;">
+                <h2>AGENTE</h2>
+            </div>
+
+            <p:dataTable id="dtAgente" value="#{agenteControl.listaAgente}" var="agente" paginator="true" rows="10" rowKey="#{agente.idagente}"
+                         selectionMode="single" selection="#{agenteControl.agenteSelect}" emptyMessage="#{etiquetas.DataTableNoRegistros}">
+
+                <p:ajax event="rowSelect" update=":growl,:frmAgente:dtAgente" />
+
+                <p:column headerText="#{etiquetas.etiquetaCedula}" filterBy="#{agente.cedula}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaCedula}" />
+                    </f:facet>
+                    <h:outputText value="#{agente.cedula}"/>
+                </p:column>
+
+                <p:column headerText="#{etiquetas.etiquetaNombre}" filterBy="#{agente.nombres}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaNombre}" />
+                    </f:facet>
+                    <h:outputText value="#{agente.nombres}"/>
+                </p:column>
+
+                <p:column headerText="#{etiquetas.etiquetaApellido}" filterBy="#{agente.apellidos}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaApellido}" />
+                    </f:facet>
+                    <h:outputText value="#{agente.apellidos}"/>
+                </p:column>
+                
+                <p:column headerText="#{etiquetas.etiquetaAgencia}" filterBy="#{agente.idagencia.nombre}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaAgencia}" />
+                    </f:facet>
+                    <h:outputText value="#{agente.idagencia.nombre}"/>
+                </p:column>
+                
+                <p:column headerText="#{etiquetas.etiquetaGrado}" filterBy="#{agente.idgrado.nombre}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaGrado}" />
+                    </f:facet>
+                    <h:outputText value="#{agente.idgrado.nombre}"/>
+                </p:column>
+                
+                <p:column headerText="Jefe" >
+                    <f:facet name="header">
+                        <h:outputText value="Jefe" />
+                    </f:facet>                    
+                    <h:outputText value="#{agente.jefe ?'Si':'No'}" />
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty agenteControl.agenteSelect}">
+                    <p:commandButton icon="ui-icon-pencil" action="#{agenteControl.estadoBoton('m')}" actionListener="#{agenteControl.seleciondo}" update="frmDialog,:frmAgente:dtAgente" onclick="PF('dlAgente').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{agenteControl.eliminar}" update=":growl,:frmAgente:dtAgente"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+            
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{agenteControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlAgente').show();" process="@this"/>
+            
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlAgente" resizable="false" header="2">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{agenciaControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                
+                <h:panelGrid columns="3">
+                    <p:outputLabel value="#{etiquetas.etiquetaCedula}"/>
+                    <p:inputText id="txtCedula" value="#{agenteControl.agente.cedula}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtCedula" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaNombre}"/>
+                    <p:inputText id="txtNombre" value="#{agenteControl.agente.nombres}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtNombre" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaApellido}"/>
+                    <p:inputText id="txtApellido" value="#{agenteControl.agente.apellidos}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtApellido" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaAgencia}" />
+                    <p:selectOneMenu id="slAgencia" value="#{agenteControl.agente.idagencia.idagencia}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}" >
+                        <f:selectItem itemValue="" itemLabel="Seleccione" />
+                        <f:selectItems value="#{agenteControl.listaAgencia}" />
+                    </p:selectOneMenu>
+                    <p:message for="slAgencia" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaGrado}" />
+                    <p:selectOneMenu id="slGrado" value="#{agenteControl.agente.idgrado.idgrado}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}" >
+                        <f:selectItem itemValue="" itemLabel="Seleccione" />
+                        <f:selectItems value="#{agenteControl.listaGrado}" />
+                    </p:selectOneMenu>
+                    <p:message for="slGrado" display="icon" />
+                    
+                    <p:outputLabel value="Jefe" />
+                    <p:selectBooleanCheckbox value="#{agenteControl.agente.jefe}" />
+
+                </h:panelGrid>
+                <p:separator />
+                
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{agenteControl.accionBoton}" actionListener="#{agenteControl.grabar}" 
+                                 update="frmDialog,:frmAgente:dtAgente,:growl" process="frmDialog" icon="ui-icon-disk" />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!agenteControl.accionBoton}" actionListener="#{agenteControl.modificar()}" 
+                                 update="frmDialog,:frmAgente:dtAgente,:growl" process="frmDialog" icon="ui-icon-disk" />
+                
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>
+

@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/layout/template.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="body">
+
+        <h:form id="frmDesOper">
+            <div style="text-align: center;">
+                <h2>DESARROLLO DEL OPERATIVO</h2>
+            </div>
+
+            <p:dataTable id="dtDesOper" selectionMode="single" value="#{desarrollOperativoControl.listaDesOperativo}"
+                         var="desOper" emptyMessage="#{etiquetas.DataTableNoRegistros}" paginator="true" rows="10"
+                         selection="#{desarrollOperativoControl.desOperativoSelect}" rowKey="#{desOper.iddesoperativo}">
+
+                <p:ajax event="rowSelect" update=":frmDesOper:dtDesOper" />
+
+                <p:column headerText="#{etiquetas.etiquetaVariable}" filterBy="#{desOper.variable}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaVariable}" />
+                    </f:facet>
+                    <h:outputText value="#{desOper.variable}"/>
+                </p:column>
+                <p:column headerText="#{etiquetas.etiquetaPuntaje}" filterBy="#{desOper.ponderacion}">
+                    <f:facet name="header">
+                        <h:outputText value="#{etiquetas.etiquetaPuntaje}" />
+                    </f:facet>
+                    <h:outputText value="#{desOper.ponderacion}"/>
+                </p:column>
+
+                <p:column width="50" rendered="#{!empty desarrollOperativoControl.desOperativoSelect}" >
+                    <p:commandButton icon="ui-icon-pencil" action="#{desarrollOperativoControl.estadoBoton('m')}" actionListener="#{desarrollOperativoControl.seleciondo()}" update="frmDialog,:frmDesOper:dtDesOper" onclick="PF('dlDesOper').show();" process="@this" />
+                    <p:commandButton icon="ui-icon-trash" actionListener="#{desarrollOperativoControl.eliminar}" update=":growl,:frmDesOper:dtDesOper"  >
+                        <p:confirm header="#{etiquetas.ConfirmHeader}" message="#{etiquetas.ConfirmMensaje}" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:separator />
+            <p:commandButton icon="ui-icon-document" value="#{etiquetas.BtNuevo}" action="#{desarrollOperativoControl.estadoBoton('n')}" update="frmDialog" onclick="PF('dlDesOper').show();" process="@this"/>
+
+        </h:form>
+
+        <p:dialog modal="false" widgetVar="dlDesOper" resizable="false">
+            <h:form id="frmDialog">
+                <h:panelGrid>
+                    <f:facet name="header">#{verificarInformacionControl.lblAccion}</f:facet>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+
+                    <p:outputLabel value="#{etiquetas.etiquetaVariable}"/>
+                    <p:inputText id="txtVariable" value="#{desarrollOperativoControl.desOperativo.variable}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtVariable" display="icon" />
+
+                    <p:outputLabel value="#{etiquetas.etiquetaPuntaje}"/>
+                    <p:inputText id="txtPuntaje" value="#{desarrollOperativoControl.desOperativo.ponderacion}" required="true" requiredMessage="#{etiquetas.etiquetaCamporRequerido}"/>
+                    <p:message for="txtPuntaje" display="icon" />
+
+
+                </h:panelGrid>
+                <p:separator />
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{desarrollOperativoControl.accionBoton}" actionListener="#{desarrollOperativoControl.grabar()}" 
+                                 update="frmDialog,:frmDesOper:dtDesOper,:growl" process="frmDialog" icon="ui-icon-disk"  />
+
+                <p:commandButton value="#{etiquetas.BtGrabar}" rendered="#{!desarrollOperativoControl.accionBoton}" actionListener="#{desarrollOperativoControl.modificar()}" 
+                                 update="frmDialog,:frmDesOper:dtDesOper,:growl" process="frmDialog" icon="ui-icon-disk" />
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
+

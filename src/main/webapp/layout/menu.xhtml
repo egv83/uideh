@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:composition>
+        <h:form id="frmMenu">
+            
+            <!--<p:slideMenu id="menu" styleClass="ui-menubar" style="width: auto; height: 90px;" >
+                <p:submenu label="Administración" style="width: auto; height: 60px; " >
+                    <p:menuitem value="Agentes" outcome="/paginas/agente.xhtml" />
+                    
+                </p:submenu>
+            </p:slideMenu>-->
+            <!-- en slide style="height: 90px;" -->
+            <!--en submenu style="height: 60px;" -->
+            <p:slideMenu id="menu" my="left top" at="left bottom" style="width: auto; height: 290px;" >
+                <p:submenu label="Administración"  > 
+                    <p:menuitem value="Agentes" outcome="/agentes/agente.xhtml" />
+                </p:submenu>
+                <p:submenu label="Parametros" >
+                    <p:menuitem value="Agencia" outcome="/parametros/agencia.xhtml" />
+                    <p:menuitem value="Grado" outcome="/parametros/grado.xhtml" />
+                </p:submenu>
+                <p:submenu label="Variables" style="height: 110px;">
+                    <p:submenu label="Flagrancia"  >
+                        <p:menuitem value="Verificar Información" outcome="/variables/flagrancia/verificarInformacion.xhtml" />
+                        <p:menuitem value="Desarrollo Operativo" outcome="/variables/flagrancia/desarrollOperativo.xhtml" />
+                        <p:menuitem value="Resultados" outcome="/variables/flagrancia/resultados.xhtml" />
+                    </p:submenu>
+                    <p:submenu label="Investigación">
+                        <p:menuitem value="Presentación Proyecto" outcome="/variables/investigacion/presentacionProyecto.xhtml"/>
+                        <p:menuitem value="Autorización Proyecto" outcome="/variables/investigacion/autorizacionProyecto.xhtml"/>
+                        <p:menuitem value="Inicio Investigación" outcome="/variables/investigacion/inicioInvestigacion.xhtml"/>
+                        <p:menuitem value="Desarrollo Investigación" outcome="/variables/investigacion/desarrolloInvestigacion.xhtml"/>
+                        <p:menuitem value="Desarrollo Operativo Investigación" outcome="/variables/investigacion/desarrolloOperativoInvestigacion.xhtml"/>
+                    </p:submenu>
+                    <p:submenu label="Actividades Productivas">
+                        <p:menuitem value="Actividades Productivas" outcome="/variables/actividadesProductivas/actividadesProductivas.xhtml" />
+                    </p:submenu>
+                </p:submenu>
+            </p:slideMenu>
+        </h:form>
+    </ui:composition>
+</html>
+

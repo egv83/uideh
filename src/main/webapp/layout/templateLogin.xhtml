@@ -1,0 +1,50 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>UIDEH</title>
+    </h:head>
+
+    <h:body>
+        <p:growl id="msg" showDetail="true" life="3000" />
+        <p:layout fullPage="true">
+            <!--<p:layoutUnit position="north" size="50" style="font-size: small;">
+                
+                <h:form id="frmHeader">
+                    <p:toolbar style="height: 25px;">
+                        <f:facet name="right">
+                            <p:commandLink value="Logour" />
+                        </f:facet>
+                    </p:toolbar>
+                </h:form>
+            </p:layoutUnit>-->
+
+            <!--<p:layoutUnit position="south" size="40" style="font-size: small;">
+                <h:outputText value="South unit content." />
+            </p:layoutUnit>-->
+
+            <!--<p:layoutUnit position="west" size="350" style="font-size: small;">
+                <ui:include src="/layout/menu.xhtml" />
+            </p:layoutUnit>-->
+
+            <!--<p:layoutUnit position="east" size="100" style="font-size: small;">
+                <h:outputText value="Right unit content." />
+            </p:layoutUnit>-->
+
+            <p:layoutUnit position="center" style="font-size: x-small;">
+                <ui:insert name="body" />
+                <!--<h:outputText value="Center" />-->
+            </p:layoutUnit>
+        </p:layout>
+
+        <!--<script language="javascript" src="#{request.contextPath}/resources/main/js/sh.js"></script>
+        <script language="javascript">
+            SyntaxHighlighter.all();
+        </script>-->
+
+    </h:body>
+
+</html>
