@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,8 +49,8 @@ public class Matriz implements Serializable {
     private Long flagrancia;
     @Column(name = "investigacion")
     private Long investigacion;
-    @Column(name = "activProductivas")
-    private Long activProductivas;    
+    @Column(name = "actproduct")
+    private Long activProductivas;
     @Column(name = "producagencia")
     private Long producagencia;
     @Column(name = "total")
@@ -66,9 +67,9 @@ public class Matriz implements Serializable {
     /*@JoinColumn(name = "idactproductivas", referencedColumnName = "idactproductivas")
     @ManyToOne
     private Actproductivas idactproductivas;*/
-    @JoinColumn(name = "agente", referencedColumnName = "idagente")
-    @ManyToOne
-    private Agente agente;
+    @JoinColumn(name = "idagente", referencedColumnName = "idagente")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Agente idagente;
     /*@JoinColumn(name = "idflagrancia", referencedColumnName = "idflagrancia")
     @ManyToOne
     private Flagrancia idflagrancia;*/
@@ -77,7 +78,7 @@ public class Matriz implements Serializable {
     private Investigacion idinvestigacion;*/
 
     public Matriz() {
-        this.agente = new Agente();
+        this.idagente = new Agente();
     }
 
     public Matriz(Long idmatriz) {
@@ -140,12 +141,12 @@ public class Matriz implements Serializable {
         this.idactproductivas = idactproductivas;
     }*/
 
-    public Agente getAgente() {
-        return agente;
+    public Agente getIdAgente() {
+        return idagente;
     }
 
-    public void setAgente(Agente agente) {
-        this.agente = agente;
+    public void setIdAgente(Agente idagente) {
+        this.idagente = idagente;
     }
 
     /*public Flagrancia getIdFlagrancia() {
