@@ -4,11 +4,13 @@ import com.uideh.dao.variables.VerificarInformacionDAO;
 import com.uideh.model.Verifinformacion;
 import com.uideh.util.Utilidades;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.model.SelectItem;
 
 /**
  *
@@ -42,9 +44,19 @@ public class VerificarInformacionControl extends Utilidades implements Serializa
         }
         return listaVerifinformacion;
     }
-    
+
+    public List<SelectItem> getListaVerifinformacionsSelect() {
+        List<SelectItem> lista = new ArrayList<SelectItem>();
+        //if (lista.isEmpty() ) {
+        for (Verifinformacion verif : verificarInformacionDAO.allVerifinformacion()) {
+            lista.add(new SelectItem(verif.getIdverifinformacion(),verif.getVariable()));
+            //this.listaVerifinformacion = verificarInformacionDAO.allVerifinformacion();
+        }
+        return lista;
+    }
+
     public String grabar() {
-        if (this.getVerifinformacion()!= null) {
+        if (this.getVerifinformacion() != null) {
             try {
                 verificarInformacionDAO.crear(this.getVerifinformacion());
                 this.verifinformacion = new Verifinformacion();
@@ -56,7 +68,7 @@ public class VerificarInformacionControl extends Utilidades implements Serializa
         }
         return "";
     }
-    
+
     public String modificar() {
         if (this.getVerifinformacion() != null) {
             try {
@@ -71,9 +83,9 @@ public class VerificarInformacionControl extends Utilidades implements Serializa
         }
         return "";
     }
-    
-     public void eliminar() {
-        if (this.getVerifinformacionSelect()!= null) {
+
+    public void eliminar() {
+        if (this.getVerifinformacionSelect() != null) {
             verificarInformacionDAO.eliminar(this.getVerifinformacionSelect());
             this.verifinformacionSelect = null;
             this.listaVerifinformacion = null;
@@ -81,7 +93,7 @@ public class VerificarInformacionControl extends Utilidades implements Serializa
             addSuccessMessage(RegistroEliminado);
         }
     }
-     
+
     public void seleciondo() {
         this.setVerifinformacion(this.getVerifinformacionSelect());
     }
@@ -95,8 +107,8 @@ public class VerificarInformacionControl extends Utilidades implements Serializa
             this.setLblAccion("Modificar Variable");
         }
     }
-    
-    public Verifinformacion getVerInformacionId(Long id){
+
+    public Verifinformacion getVerInformacionId(Long id) {
         return verificarInformacionDAO.verifInformacion(id);
     }
 
