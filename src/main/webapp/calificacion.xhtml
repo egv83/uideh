@@ -10,9 +10,9 @@
 
                 <p:toolbar>
                     <f:facet name="left">
-                        <p:commandButton value="#{etiquetas.BtNuevo}" icon="ui-icon-document" />
+                        <p:commandButton value="#{etiquetas.BtNuevo}" icon="ui-icon-document" actionListener="#{calificarControl.limpiar}" process="@this" update="frmCalifica" />
                         <p:commandButton value="#{etiquetas.BtGrabar}" actionListener="#{calificarControl.grabar()}" 
-                                         update=":growl, :frmCalifica" icon="ui-icon-disk" process="@this" />
+                                         update=":growl,:frmCalifica" icon="ui-icon-disk" process="@this" />
                     </f:facet>
                 </p:toolbar>
 
@@ -45,7 +45,7 @@
                     <p:spacer width="30" />
 
                     <h:panelGrid columns="4" id="pgNota">
-                        <p:outputLabel value="Verif Infor" />
+                        <!--<p:outputLabel value="Verif Infor" />
                         <p:inputText value="#{calificarControl.sumaVerInf}"/>
 
                         <p:outputLabel value="Desarrollo Oper" />
@@ -79,12 +79,12 @@
                         <p:inputText value="#{calificarControl.tmpResultInvest}" />
 
                         <p:outputLabel value="Activ Product" />
-                        <p:inputText value="#{calificarControl.sumaActProduct}"/>
+                        <p:inputText value="#{calificarControl.sumaActProduct}"/>-->
 
                         <p:outputLabel value="Nota:" />
-                        <p:inputText id="txtNota" value="#{calificarControl.total}" />
+                        <p:inputText id="txtNota" value="#{calificarControl.matriz.total}" readonly="true" />
 
-                        <p:outputLabel value="SUMATORIA FLAG:" />
+                        <!--<p:outputLabel value="SUMATORIA FLAG:" />
                         <p:inputText value="#{calificarControl.sumatoriaFlagrancia}" />
 
                         <p:outputLabel value="TOTAL FLAG:" />
@@ -100,7 +100,7 @@
                         <p:inputText value="#{calificarControl.investMayor}" />
 
                         <p:outputLabel value="SUMATORIA ACT PRODUCT:" />
-                        <p:inputText value="#{calificarControl.sumaActProduct}" />
+                        <p:inputText value="#{calificarControl.tmpActivProductivas}" />
 
                         <p:outputLabel value="TOTAL ACT PRODUCR:" />
                         <p:inputText value="#{calificarControl.totalActivProduct}" />
@@ -109,7 +109,7 @@
                         <p:outputLabel value="#{calificarControl.selectedAgente.jefe}" />
 
                         <p:outputLabel value="FLAG 2:" />
-                        <p:outputLabel value="#{calificarControl.flagDos}" />
+                        <p:outputLabel value="#{calificarControl.flagDos}" />-->
 
                     </h:panelGrid>
 
@@ -123,7 +123,8 @@
                             <p:panel header="VERIFICACIÓN DE INFORMACIÓN" >
 
                                 <p:selectManyCheckbox id="slVerInf" value="#{calificarControl.selectedVerifInf}" layout="pageDirection" columns="1">
-                                    <f:selectItems value="#{verificarInformacionControl.listaVerifinformacions}" var="verInf" itemValue="#{verInf.idverifinformacion}" itemLabel="#{verInf.variable}" />
+                                    <f:selectItems value="#{verificarInformacionControl.listaVerifinformacions}" var="verInf" itemValue="#{verInf.idverifinformacion}" itemLabel="#{verInf.variable}" /> 
+                                    <!-- <f:selectItems value="#{verificarInformacionControl.listaVerifinformacionsSelect}" /> -->
                                     <p:ajax update="slVerInf,:frmCalifica:pgNota" listener="#{calificarControl.calcularVerInf()}" />
                                 </p:selectManyCheckbox>
 
@@ -223,7 +224,7 @@
                     <h:panelGrid>
                         <f:facet name="header">#{etiquetas.etiquetaAgente}</f:facet>
                     </h:panelGrid>
-                    <p:dataTable id="dtAgente" value="#{agenteControl.listaAgente}" var="agente" paginator="true" rows="10" 
+                    <p:dataTable id="dtAgente" value="#{agenteControl.listaAgente}" var="agente" widgetVar="tbAgente" paginator="true" rows="10" 
                                  emptyMessage="#{etiquetas.DataTableNoRegistros}" tableStyle="width:auto" rowKey="#{agente.idagente}" 
                                  selectionMode="single" selection="#{calificarControl.selectedAgente}" >
 
@@ -248,6 +249,16 @@
                                 <h:outputText value="#{etiquetas.etiquetaApellido}" />
                             </f:facet>
                             <h:outputText value="#{agente.apellidos}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{etiquetas.etiquetaAgencia}" filterBy="#{agente.idagencia.nombre}" filterMatchMode="exact">
+                            <f:facet name="filter">
+                                <p:selectOneMenu onchange="PF('tbAgente').filter()" >
+                                    <f:selectItem itemLabel="Select One" itemValue="#{null}" noSelectionOption="true" />
+                                    <f:selectItems value="#{calificarControl.agencias}" />
+                                </p:selectOneMenu>
+                            </f:facet>
+                            <h:outputText value="#{agente.idagencia.nombre}"/>
                         </p:column>
 
                         <p:column headerText="Jefe" >
