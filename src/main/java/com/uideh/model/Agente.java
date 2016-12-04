@@ -58,7 +58,7 @@ public class Agente implements Serializable {
     @JoinColumn(name = "idgrado", referencedColumnName = "idgrado")
     @ManyToOne(fetch = FetchType.EAGER)
     private Grado idgrado;
-    @OneToMany(mappedBy = "agente")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "idagente")
     private Collection<Matriz> matrizCollection;
 
     public Agente() {
