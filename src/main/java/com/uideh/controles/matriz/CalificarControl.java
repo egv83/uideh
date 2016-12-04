@@ -1,6 +1,8 @@
 package com.uideh.controles.matriz;
 
+import com.uideh.dao.AgenciaDAO;
 import com.uideh.dao.AgentesDAO;
+import com.uideh.dao.matriz.MatrizDAO;
 import com.uideh.dao.variables.ActividadesProductivasDAO;
 import com.uideh.dao.variables.AutorizacionProyectoDAO;
 import com.uideh.dao.variables.DesarrollOperativoDAO;
@@ -10,11 +12,14 @@ import com.uideh.dao.variables.InicioInvestigacionDAO;
 import com.uideh.dao.variables.PresentacionProyectoDAO;
 import com.uideh.dao.variables.ResultadosDAO;
 import com.uideh.dao.variables.VerificarInformacionDAO;
+import com.uideh.model.Agencia;
 import com.uideh.model.Agente;
 import com.uideh.model.Matriz;
 import com.uideh.util.Utilidades;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -28,6 +33,10 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class CalificarControl extends Utilidades implements Serializable {
 
+    @EJB
+    MatrizDAO matrizDAO;
+    @EJB
+    AgenciaDAO agenciaDAO;
     @EJB
     AgentesDAO agentesDAO;
     @EJB
@@ -53,16 +62,16 @@ public class CalificarControl extends Utilidades implements Serializable {
     private Agente agente;
     private Agente selectedAgente;
     private Boolean flagDos;
-    private Long[] selectedVerifInf;
-    private Long[] selectedDesOper;
-    private Long[] selectedResult;
-    private Long[] selectedPresProyect;
-    private Long[] selectedAutProyect;
-    private Long[] selectedInicioInvest;
-    private Long[] selectedDesaInvestig;
-    private Long[] selectedDesaOperativ;
-    private Long[] selectedResultInv;
-    private Long[] selectedActProduct;
+    private List<Long> selectedVerifInf;
+    private List<Long> selectedDesOper;
+    private List<Long> selectedResult;
+    private List<Long> selectedPresProyect;
+    private List<Long> selectedAutProyect;
+    private List<Long> selectedInicioInvest;
+    private List<Long> selectedDesaInvestig;
+    private List<Long> selectedDesaOperativ;
+    private List<Long> selectedResultInv;
+    private List<Long> selectedActProduct;
 
     private Long sumaVerInf;
     private Long sumaDesOper;
@@ -94,6 +103,7 @@ public class CalificarControl extends Utilidades implements Serializable {
     public void inicio() {
         this.matriz = new Matriz();
         this.matriz.setFecha(getFechaActual());
+        //this.selectedAgente
 
         /**
          * *
@@ -131,8 +141,6 @@ public class CalificarControl extends Utilidades implements Serializable {
     }
 
     public String getAgenteNombre() {
-        System.out.println("ENTRO EN GET AGENTE COMBRE");
-        System.out.println("VALOR DE AGENTE: " + this.getMatriz().getAgente());
         if (this.getSelectedAgente() != null) {
             return this.getSelectedAgente().getNombres() + " " + this.getSelectedAgente().getApellidos();
         }
@@ -140,43 +148,129 @@ public class CalificarControl extends Utilidades implements Serializable {
     }
 
     public void grabar() {
-        System.out.println("ENTRO EN GUARDAR");
-        for (Long verInf : this.getSelectedVerifInf()) {
-            addSuccessMessage(verInf.toString());
+        try {
+            System.out.println("EN GREBAR");
+            System.out.println("TOTAL FLAG: " + this.totalFlag);
+            System.out.println("TOTAL INVEST: " + this.totalInvest);
+            System.out.println("TOTAL ActivProduct: " + this.totalActivProduct);
+            if (this.getSelectedAgente()!=null&&this.totalFlag != 0 && this.totalInvest != 0 && this.totalActivProduct != 0) {
+                this.getMatriz().setIdAgente(this.getSelectedAgente());
+                this.getMatriz().setActivProductivas(this.getTotalActivProduct());
+                this.getMatriz().setInvestigacion(this.getTotalInvest());
+                this.getMatriz().setFlagrancia(this.getTotalFlag());
+                this.getMatriz().setTotal(this.getTotal());
+                matrizDAO.crear(this.getMatriz());
+                this.limpiar();
+                addSuccessMessage("Se guardo con exito la calificación");
+            } else {
+                addWarningMessage("Tiene que seleccionar un agente y hacer la selección de una de las 3 secciones de variables");
+            }
+        } catch (Exception e) {
+            addErrorMessage(e.getMessage());
+        } finally {
+
         }
-        for (Long desOper : this.getSelectedDesOper()) {
-            addSuccessMessage(desOper.toString());
+
+    }
+
+    public void limpiar() {
+        this.matriz = new Matriz();
+        this.matriz.setFecha(getFechaActual());
+        this.selectedAgente = null;
+
+        /**
+         * *
+         * VARIABLES DE FLAGRANCIA
+         */
+        this.sumaVerInf = new Long(0);
+        this.sumaDesOper = new Long(0);
+        this.tmpResultFlag = new Long(0);
+
+        /**
+         * VARIABLES DE INVESTIGACIÓN
+         */
+        this.sumaAutProyect = new Long(0);
+        this.sumaInicioInvest = new Long(0);
+        this.sumaDesaInvestig = new Long(0);
+        this.sumaDesaOperativ = new Long(0);
+        this.tmpResultInvest = new Long(0);
+
+        /**
+         * VARIABLES ACTIVIDADES PRODUCTIVAS
+         */
+        this.tmpActivProductivas = new Long(0);
+        this.investMayor = new Long(0);
+
+        /**
+         * VARIABLES PARA LA SUMATORIAS DE FLAGRANCIA, INVESTIGACIÓN y
+         * ACTIVIDADES PRODUCTIVAS
+         */
+        this.sumatoriaFlagrancia = new Long(0);
+        this.sumatoriaProyectoInvestig = new Long(0);
+        this.totalFlag = new Long(0);
+        this.totalInvest = new Long(0);
+        this.totalActivProduct = new Long(0);
+        this.total = new Long(0);
+
+        /**
+         * LISTAS DE VARIABLES
+         */
+        if (this.selectedActProduct != null && !this.selectedActProduct.isEmpty()) {
+            this.selectedActProduct.clear();
         }
-        for (Long result : this.getSelectedResult()) {
-            addSuccessMessage(result.toString());
+        if (this.selectedAutProyect != null && !this.selectedAutProyect.isEmpty()) {
+            this.selectedAutProyect.clear();
         }
+        if (this.selectedDesOper != null && !this.selectedDesOper.isEmpty()) {
+            this.selectedDesOper.clear();
+        }
+        if (this.selectedDesaInvestig != null && !this.selectedDesaInvestig.isEmpty()) {
+            this.selectedDesaInvestig.clear();
+        }
+        if (this.selectedDesaOperativ != null && !this.selectedDesaOperativ.isEmpty()) {
+            this.selectedDesaOperativ.clear();
+        }
+        if (this.selectedInicioInvest != null && !this.selectedInicioInvest.isEmpty()) {
+            this.selectedInicioInvest.clear();
+        }
+        if (this.selectedPresProyect != null && !this.selectedPresProyect.isEmpty()) {
+            this.selectedPresProyect.clear();
+        }
+        if (this.selectedResult != null && !this.selectedResult.isEmpty()) {
+            this.selectedResult.clear();
+        }
+        if (this.selectedResultInv != null && !this.selectedResultInv.isEmpty()) {
+            this.selectedResultInv.clear();
+        }
+        if (this.selectedVerifInf != null && !this.selectedVerifInf.isEmpty()) {
+            this.selectedVerifInf.clear();
+        }
+
     }
 
     public void calcularVerInf() {
-        System.out.println("ENTRO EN CALCULAR");
         this.sumaVerInf = new Long(0);
-
-        for (Long verInf : this.getSelectedVerifInf()) {
-            System.out.println("ENTRO EN PRIMER FOR");
-            sumaVerInf = sumaVerInf + verificarInformacionDAO.verifInformacion(verInf).getPonderacion();
+        for (Object verInf : this.getSelectedVerifInf().toArray()) {
+            sumaVerInf = sumaVerInf + verificarInformacionDAO.verifInformacion(new Long(verInf.toString())).getPonderacion();
         }
+        /*for (Long verInf : this.getSelectedVerifInf()) {
+            sumaVerInf = sumaVerInf + verificarInformacionDAO.verifInformacion(verInf).getPonderacion();
+        }*/
         this.calculoSumatoriaFlagracia();
     }
 
     public void calcularDesOper() {
-        System.out.println("ENTRO EN CALCULO DESOPER");
         this.sumaDesOper = new Long(0);
-        for (Long desOper : this.getSelectedDesOper()) {
-            System.out.println("ID: " + desOper);
-            this.sumaDesOper = sumaDesOper + desarrollOperativoDAO.desOperativoId(desOper).getPonderacion();
+        for (Object desOper : this.getSelectedDesOper().toArray()) {
+            this.sumaDesOper = sumaDesOper + desarrollOperativoDAO.desOperativoId(new Long(desOper.toString())).getPonderacion();
         }
         this.calculoSumatoriaFlagracia();
     }
 
     public void calcularResult() {
         this.sumaResult = new Long(0);
-        for (Long result : this.getSelectedResult()) {
-            this.sumaResult = sumaResult + resultadosDAO.resultadosId(result).getPonderacion();
+        for (Object result : this.getSelectedResult().toArray()) {
+            this.sumaResult = sumaResult + resultadosDAO.resultadosId(new Long(result.toString())).getPonderacion();
         }
         if (this.sumaResult > 15) {
             this.tmpResultFlag = new Long(60);
@@ -192,48 +286,48 @@ public class CalificarControl extends Utilidades implements Serializable {
 
     public void calculoPresProyect() {
         this.sumaPresProy = new Long(0);
-        for (Long presProy : this.getSelectedPresProyect()) {
-            this.sumaPresProy = sumaPresProy + presentacionProyectoDAO.presProyectId(presProy).getPonderacion();
+        for (Object presProy : this.getSelectedPresProyect().toArray()) {
+            this.sumaPresProy = sumaPresProy + presentacionProyectoDAO.presProyectId(new Long(presProy.toString())).getPonderacion();
         }
         this.calculoSumatoriaProyectoInvestigacion();
     }
 
     public void calculoAutoProyect() {
         this.sumaAutProyect = new Long(0);
-        for (Long autProyect : this.getSelectedAutProyect()) {
-            this.sumaAutProyect = sumaAutProyect + autorizacionProyectoDAO.autoProyectId(autProyect).getPonderacion();
+        for (Object autProyect : this.getSelectedAutProyect().toArray()) {
+            this.sumaAutProyect = sumaAutProyect + autorizacionProyectoDAO.autoProyectId(new Long(autProyect.toString())).getPonderacion();
         }
         this.calculoSumatoriaProyectoInvestigacion();
     }
 
     public void calculoInicioInvest() {
         this.sumaInicioInvest = new Long(0);
-        for (Long inicInvest : this.getSelectedInicioInvest()) {
-            this.sumaInicioInvest = sumaInicioInvest + inicioInvestigacionDAO.inicInvetigacionId(inicInvest).getPonderacion();
+        for (Object inicInvest : this.getSelectedInicioInvest().toArray()) {
+            this.sumaInicioInvest = sumaInicioInvest + inicioInvestigacionDAO.inicInvetigacionId(new Long(inicInvest.toString())).getPonderacion();
         }
         this.calculoSumatoriaProyectoInvestigacion();
     }
 
     public void calculoDesaInvestig() {
         this.sumaDesaInvestig = new Long(0);
-        for (Long desaInvestig : this.getSelectedDesaInvestig()) {
-            this.sumaDesaInvestig = this.sumaDesaInvestig + desarrolloInvestigacionDAO.desaInvestigacionId(desaInvestig).getPonderacion();
+        for (Object desaInvestig : this.getSelectedDesaInvestig().toArray()) {
+            this.sumaDesaInvestig = this.sumaDesaInvestig + desarrolloInvestigacionDAO.desaInvestigacionId(new Long(desaInvestig.toString())).getPonderacion();
         }
         this.calculoSumatoriaProyectoInvestigacion();
     }
 
     public void calculoDesaOperativ() {
         this.sumaDesaOperativ = new Long(0);
-        for (Long desaOperativ : this.getSelectedDesaOperativ()) {
-            this.sumaDesaOperativ = sumaDesaOperativ + desarrollOperativoInvestigacionDAO.desaoperativoId(desaOperativ).getPonderacion();
+        for (Object desaOperativ : this.getSelectedDesaOperativ().toArray()) {
+            this.sumaDesaOperativ = sumaDesaOperativ + desarrollOperativoInvestigacionDAO.desaoperativoId(new Long(desaOperativ.toString())).getPonderacion();
         }
         this.calculoSumatoriaProyectoInvestigacion();
     }
 
     public void calculoResultInvest() {
         this.sumaResultInv = new Long(0);
-        for (Long resultInv : this.getSelectedResultInv()) {
-            this.sumaResultInv = sumaResultInv + resultadosDAO.resultadosId(resultInv).getPonderacion();
+        for (Object resultInv : this.getSelectedResultInv().toArray()) {
+            this.sumaResultInv = sumaResultInv + resultadosDAO.resultadosId(new Long(resultInv.toString())).getPonderacion();
         }
 
         if (this.sumaResultInv > 20) {
@@ -251,9 +345,9 @@ public class CalificarControl extends Utilidades implements Serializable {
     public void calculoActProduct() {
         this.sumaActProduct = new Long(0);
         this.totalActivProduct = new Long(0);
-        if (this.getSelectedActProduct() != null && this.getSelectedActProduct().length != 0) {
-            for (Long actProduct : this.getSelectedActProduct()) {
-                this.sumaActProduct = sumaActProduct + actividadesProductivasDAO.actProductivasId(actProduct).getPonderacion();
+        if (this.getSelectedActProduct() != null) {
+            for (Object actProduct : this.getSelectedActProduct().toArray()) {
+                this.sumaActProduct = sumaActProduct + actividadesProductivasDAO.actProductivasId(new Long(actProduct.toString())).getPonderacion();
             }
         }
 
@@ -265,22 +359,19 @@ public class CalificarControl extends Utilidades implements Serializable {
             this.tmpActivProductivas = new Long(0);
         }
 
-        System.out.println("ANTES DE IF MATRIZ");
-        if (this.matriz != null && this.matriz.getIdmatriz() != null) {
-            System.out.println("INSTANCIA MATRIZ: " + this.matriz);
-            if (this.matriz.getAgente() != null && this.matriz.getAgente().getJefe()) {
-                System.out.println("INSTANCIA MATRIZ AGENTE: " + this.matriz.getAgente());
+        if (this.getSelectedAgente() != null && this.getSelectedAgente().getJefe()) {
                 this.totalActivProduct = (this.sumatoriaActProduct() * 50) / 60;
-                this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;
-            }
+                //this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;       
         } else {
             this.totalActivProduct = this.sumatoriaActProduct();
         }
-        this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;
+        this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
     }
 
     private Long sumatoriaActProduct() {
         Long sumActivProduct = new Long(0);
+        System.out.println("Temp Activ Product: "+this.tmpActivProductivas);
+        System.out.println("Investiga Mayor 20: "+this.investMayor);
         sumActivProduct = this.tmpActivProductivas + this.investMayor;
         if (this.flagDos != null && this.flagDos) {
             sumActivProduct = sumActivProduct + 40;
@@ -290,43 +381,38 @@ public class CalificarControl extends Utilidades implements Serializable {
 
     private void calculoSumatoriaFlagracia() {
         this.sumatoriaFlagrancia = new Long(0);
-        //if(this.sumaVerInf != null  && this.sumaDesOper != null 
-        //        && this.tmpResultFlag != null ){
         this.sumatoriaFlagrancia = this.sumaVerInf + this.sumaDesOper + this.tmpResultFlag;
-        //}
-
-        System.out.println("ANTES DE IF SELECTED AGENTE SUMATORIA FLAG");
-        if (this.getSelectedAgente() != null) {
-            System.out.println("INSTANCIA MATRIZ: " + this.getSelectedAgente());
-            if (this.getSelectedAgente().getJefe()) {
-                System.out.println("INSTANCIA MATRIZ AGENTE: " + this.getSelectedAgente().getJefe());
-                this.totalFlag = (this.sumatoriaFlagrancia * 10) / 100;
-            }
+        System.out.println("CALCULO FLAGRANCIA");
+        System.out.println("SELECTED AGENTE: " + this.getSelectedAgente());
+        if (this.getSelectedAgente() != null && this.getSelectedAgente().getJefe()) {
+            System.out.println("ES JEFE: " + this.getSelectedAgente().getJefe());
+            this.totalFlag = (this.sumatoriaFlagrancia * 10) / 100;
         } else {
+            System.out.println("ENTRO SI NO ES JEFE EN CALCULO SUMATORIA FLAG");
             this.totalFlag = (this.sumatoriaFlagrancia * 20) / 100;
         }
-
-        this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;
-        System.out.println("RESULTADO SUMATORIA FLAG: " + this.sumatoriaFlagrancia);
+        this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
     }
 
     private void calculoSumatoriaProyectoInvestigacion() {
         this.sumatoriaProyectoInvestig = new Long(0);
-        //if(this.sumaPresProy != null && this.sumaPresProy !=0 && this.sumaAutProyect != null && this.sumaAutProyect != 0
-        //        && this.sumaInicioInvest != null && this.sumaInicioInvest != 0 && this.sumaDesaInvestig != null && this.sumaDesaInvestig != 0
-        //        && this.sumaDesaOperativ != null && this.sumaDesaOperativ != 0 && this.tmpResultInvest != null && this.tmpResultInvest !=0){
         this.sumatoriaProyectoInvestig = this.sumaPresProy + this.sumaAutProyect + this.sumaInicioInvest
                 + this.sumaDesaInvestig + this.sumaDesaOperativ + this.tmpResultInvest;
-        //}
         if (this.sumatoriaProyectoInvestig > 20) {
             this.investMayor = new Long(10);
         } else {
             this.investMayor = new Long(0);
         }
-
         this.totalInvest = (this.sumatoriaProyectoInvestig * 20) / 100;
-        this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;
-        System.out.println("RESULTADO SUMATORIA INVEST: " + this.sumatoriaProyectoInvestig);
+        this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+    }
+
+    public List<String> getAgencias() {
+        List<String> lista = new ArrayList<String>();
+        for (Agencia agencia : agenciaDAO.allAgencias()) {
+            lista.add(agencia.getNombre());
+        }
+        return lista;
     }
 
     public void jefeAgente() {
@@ -345,78 +431,75 @@ public class CalificarControl extends Utilidades implements Serializable {
         return getFechaActual();
     }
 
-    /*public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }*/
-    public Long[] getSelectedVerifInf() {
+    public List<Long> getSelectedVerifInf() {
         return selectedVerifInf;
     }
 
-    public void setSelectedVerifInf(Long[] selectedVerifInf) {
+    public void setSelectedVerifInf(List<Long> selectedVerifInf) {
         this.selectedVerifInf = selectedVerifInf;
     }
 
-    public Long[] getSelectedDesOper() {
+    public List<Long> getSelectedDesOper() {
         return selectedDesOper;
     }
 
-    public void setSelectedDesOper(Long[] selectedDesOper) {
+    public void setSelectedDesOper(List<Long> selectedDesOper) {
         this.selectedDesOper = selectedDesOper;
     }
 
-    public Long[] getSelectedResult() {
+    public List<Long> getSelectedResult() {
         return selectedResult;
     }
 
-    public void setSelectedResult(Long[] selectedResult) {
+    public void setSelectedResult(List<Long> selectedResult) {
         this.selectedResult = selectedResult;
     }
 
-    public Long[] getSelectedPresProyect() {
+    public List<Long> getSelectedPresProyect() {
         return selectedPresProyect;
     }
 
-    public void setSelectedPresProyect(Long[] selectedPresProyect) {
+    public void setSelectedPresProyect(List<Long> selectedPresProyect) {
         this.selectedPresProyect = selectedPresProyect;
     }
 
-    public Long[] getSelectedAutProyect() {
+    public List<Long> getSelectedAutProyect() {
         return selectedAutProyect;
     }
 
-    public void setSelectedAutProyect(Long[] selectedAutProyect) {
+    public void setSelectedAutProyect(List<Long> selectedAutProyect) {
         this.selectedAutProyect = selectedAutProyect;
     }
 
-    public Long[] getSelectedInicioInvest() {
+    public List<Long> getSelectedInicioInvest() {
         return selectedInicioInvest;
     }
 
-    public void setSelectedInicioInvest(Long[] selectedInicioInvest) {
+    public void setSelectedInicioInvest(List<Long> selectedInicioInvest) {
         this.selectedInicioInvest = selectedInicioInvest;
     }
 
-    public Long[] getSelectedDesaInvestig() {
+    public List<Long> getSelectedDesaInvestig() {
         return selectedDesaInvestig;
     }
 
-    public void setSelectedDesaInvestig(Long[] selectedDesaInvestig) {
+    public void setSelectedDesaInvestig(List<Long> selectedDesaInvestig) {
         this.selectedDesaInvestig = selectedDesaInvestig;
     }
 
-    public Long[] getSelectedDesaOperativ() {
+    public List<Long> getSelectedDesaOperativ() {
         return selectedDesaOperativ;
     }
 
-    public void setSelectedDesaOperativ(Long[] selectedDesaOperativ) {
+    public void setSelectedDesaOperativ(List<Long> selectedDesaOperativ) {
         this.selectedDesaOperativ = selectedDesaOperativ;
     }
 
-    public Long[] getSelectedResultInv() {
+    public List<Long> getSelectedResultInv() {
         return selectedResultInv;
     }
 
-    public void setSelectedResultInv(Long[] selectedResultInv) {
+    public void setSelectedResultInv(List<Long> selectedResultInv) {
         this.selectedResultInv = selectedResultInv;
     }
 
@@ -460,11 +543,11 @@ public class CalificarControl extends Utilidades implements Serializable {
         this.sumaAutProyect = sumaAutProyect;
     }
 
-    public Long[] getSelectedActProduct() {
+    public List<Long> getSelectedActProduct() {
         return selectedActProduct;
     }
 
-    public void setSelectedActProduct(Long[] selectedActProduct) {
+    public void setSelectedActProduct(List<Long> selectedActProduct) {
         this.selectedActProduct = selectedActProduct;
     }
 
