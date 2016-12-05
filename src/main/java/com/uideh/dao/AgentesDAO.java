@@ -46,4 +46,20 @@ public class AgentesDAO {
         }
         return null;
     }
+    
+    public Long totalAgentesPorAgencia(Agente agente){
+        StringBuilder str = new StringBuilder();
+        str.append("SELECT COUNT(a) FROM Agente a");
+        str.append(" WHERE a.idagencia.idagencia=?1");
+        str.append(" AND a.jefe=false");
+        Query query = em.createQuery(str.toString());
+        query.setParameter(1, agente.getIdagencia().getIdagencia());
+
+        if(query.getSingleResult() != null ){
+            System.out.println("CONSULTA SINGLE RESULT: "+query.getSingleResult());
+            return (Long)query.getSingleResult();
+        }
+
+        return null;
+    }
 }
