@@ -1,5 +1,6 @@
 package com.uideh.util;
 
+import java.util.Calendar;
 import java.util.Date;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -16,6 +17,7 @@ public class Utilidades {
     public static final String RegistroEliminado = "Registro satisfacoriamente eliminado";
     
     private Date fechaActual = new Date();
+    private Calendar calendario = Calendar.getInstance();
     
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg);
@@ -40,7 +42,30 @@ public class Utilidades {
         getRequestContext().execute(componente);
     }
     
-     public Date getFechaActual() {
+    public String fechaActualSinHora()
+    {
+        //Calendar calendario = Calendar.getInstance();
+        calendario.setTime(new Date());
+        String fecha=calendario.get(Calendar.YEAR)+"/"+(calendario.get(Calendar.MONTH)+1)+"/"+calendario.get(Calendar.DAY_OF_MONTH);
+        return fecha;
+    }
+    
+    public String mesActual()
+    {
+        //Calendar calendario = Calendar.getInstance();
+        calendario.setTime(new Date());
+        String fecha=(calendario.get(Calendar.MONTH)+1)+"";
+        return fecha;
+    }
+    
+    public String añoActual(){
+        //Calendar calendario = Calendar.getInstance();
+        calendario.setTime(new Date());
+        String fecha=calendario.get(Calendar.YEAR)+"";
+        return fecha;
+    }
+    
+    public Date getFechaActual() {
         return fechaActual;
     }
 

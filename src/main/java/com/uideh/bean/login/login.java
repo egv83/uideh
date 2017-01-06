@@ -1,6 +1,5 @@
 package com.uideh.bean.login;
 
-import static com.sun.corba.se.spi.presentation.rmi.StubAdapter.request;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
@@ -9,7 +8,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.primefaces.context.RequestContext;
@@ -66,10 +64,10 @@ public class login implements Serializable {
 
         HttpSession httpSession;
 
-        System.out.println("Usuario: " + this.getUsuario());
-        System.out.println("Clave: " + this.getClave());
+        //System.out.println("Usuario: " + this.getUsuario());
+        //System.out.println("Clave: " + this.getClave());
         if (this.getUsuario().equals("admin") && this.getClave().equals("admin")) {
-            System.out.println("ENTRO SI ES ADMIN");
+            //System.out.println("ENTRO SI ES ADMIN");
             httpSession = getSession();
             httpSession.setAttribute("usuario", this.getUsuario());
 
@@ -79,8 +77,8 @@ public class login implements Serializable {
 //            context.addCallbackParam("estaLogeado", true);
 
 //            context.addCallbackParam("view", "index.xhtml");
-            System.out.println("ANTES DE VER: ");
-            System.out.println("USUARIO HTTP: " + httpSession.getAttribute("usuario"));
+            //System.out.println("ANTES DE VER: ");
+            //System.out.println("USUARIO HTTP: " + httpSession.getAttribute("usuario"));
 
             //return "home.xhtml?faces-redirect=true";
             return "home";
@@ -114,7 +112,7 @@ public class login implements Serializable {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance()
                 .getExternalContext().getSession(false);
 
-        System.out.println("VALOR DE SESSION EN LOGOUT: " + session.getAttribute("usuario"));
+        //System.out.println("VALOR DE SESSION EN LOGOUT: " + session.getAttribute("usuario"));
 
         session.invalidate();
         //logeado = false;
@@ -136,18 +134,18 @@ public class login implements Serializable {
             URI uri;
             StringBuilder ruta = new StringBuilder();
             HttpServletRequest servletRequest = (HttpServletRequest) ext.getRequest();
-            System.out.println("REQUEST URI: " + servletRequest.getRequestURI());
+            //System.out.println("REQUEST URI: " + servletRequest.getRequestURI());
 
-            System.out.println("REQUEST SCHEMA: " + ext.getRequestScheme());
+            //System.out.println("REQUEST SCHEMA: " + ext.getRequestScheme());
             uri = new URI(ext.getRequestScheme(), null, ext.getRequestServerName(), ext.getRequestServerPort(), ext.getRequestContextPath(), null, null);
-            System.out.println("URI: " + uri);
+            //System.out.println("URI: " + uri);
 
             ruta.append(servletRequest.getServerName());
             ruta.append(":");
             ruta.append(servletRequest.getServerPort());
             ruta.append(servletRequest.getContextPath());
 
-            System.out.println("RUTA: " + ruta);
+            //System.out.println("RUTA: " + ruta);
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             session.invalidate();
 
@@ -158,26 +156,20 @@ public class login implements Serializable {
     }
 
     public void verificarSesion() {
-        System.out.println("ENTRO EN VERIFICAR SESION 1");
         try {
-
-            System.out.println("ENTRO EN TRY");
             FacesContext context = FacesContext.getCurrentInstance();
             ExternalContext ext = context.getExternalContext();
 
             URI uri = new URI(ext.getRequestScheme(), null, ext.getRequestServerName(), ext.getRequestServerPort(), ext.getRequestContextPath(), null, null);
 
             String usuario = (String) context.getExternalContext().getSessionMap().get("usuario");
-            System.out.println("USUARIO: " + usuario);
 
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 
             if (usuario == null) {
                 session.invalidate();
-                System.out.println("ENTRO EN IF");
                 //context.getExternalContext().redirect("./../index.xhtml");
                 //context.getExternalContext().getSessionMap().remove("usuario");
-                System.out.println("URI VERIFICAR: " + uri.toString());
                 context.getExternalContext().redirect(uri.toString());
             }
         } catch (Exception e) {

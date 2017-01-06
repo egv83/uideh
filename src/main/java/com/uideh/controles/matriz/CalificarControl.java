@@ -95,6 +95,7 @@ public class CalificarControl extends Utilidades implements Serializable {
     private Long totalInvest;
     private Long totalActivProduct;
     private Long total;
+    private Long promedio;
 
     public CalificarControl() {
     }
@@ -111,6 +112,7 @@ public class CalificarControl extends Utilidades implements Serializable {
          */
         this.sumaVerInf = new Long(0);
         this.sumaDesOper = new Long(0);
+        this.sumaResult = new Long(0);
         this.tmpResultFlag = new Long(0);
 
         /**
@@ -121,10 +123,12 @@ public class CalificarControl extends Utilidades implements Serializable {
         this.sumaDesaInvestig = new Long(0);
         this.sumaDesaOperativ = new Long(0);
         this.tmpResultInvest = new Long(0);
+        this.sumaPresProy = new Long(0);
 
         /**
          * VARIABLES ACTIVIDADES PRODUCTIVAS
          */
+        this.sumaActProduct = new Long(0);
         this.tmpActivProductivas = new Long(0);
         this.investMayor = new Long(0);
 
@@ -138,6 +142,7 @@ public class CalificarControl extends Utilidades implements Serializable {
         this.totalInvest = new Long(0);
         this.totalActivProduct = new Long(0);
         this.total = new Long(0);
+        this.promedio = new Long(0);
     }
 
     public String getAgenteNombre() {
@@ -153,11 +158,13 @@ public class CalificarControl extends Utilidades implements Serializable {
             System.out.println("TOTAL FLAG: " + this.totalFlag);
             System.out.println("TOTAL INVEST: " + this.totalInvest);
             System.out.println("TOTAL ActivProduct: " + this.totalActivProduct);
-            if (this.getSelectedAgente()!=null&&this.totalFlag != 0 && this.totalInvest != 0 && this.totalActivProduct != 0) {
+            if (this.getSelectedAgente() != null && this.totalFlag != 0 && this.totalInvest != 0 && this.totalActivProduct != 0) {
                 this.getMatriz().setIdAgente(this.getSelectedAgente());
                 this.getMatriz().setActivProductivas(this.getTotalActivProduct());
                 this.getMatriz().setInvestigacion(this.getTotalInvest());
                 this.getMatriz().setFlagrancia(this.getTotalFlag());
+                this.getMatriz().setProducagencia(this.getPromedio());
+
                 this.getMatriz().setTotal(this.getTotal());
                 matrizDAO.crear(this.getMatriz());
                 this.limpiar();
@@ -184,6 +191,7 @@ public class CalificarControl extends Utilidades implements Serializable {
          */
         this.sumaVerInf = new Long(0);
         this.sumaDesOper = new Long(0);
+        this.sumaResult = new Long(0);
         this.tmpResultFlag = new Long(0);
 
         /**
@@ -194,10 +202,12 @@ public class CalificarControl extends Utilidades implements Serializable {
         this.sumaDesaInvestig = new Long(0);
         this.sumaDesaOperativ = new Long(0);
         this.tmpResultInvest = new Long(0);
+        this.sumaPresProy = new Long(0);
 
         /**
          * VARIABLES ACTIVIDADES PRODUCTIVAS
          */
+        this.sumaActProduct = new Long(0);
         this.tmpActivProductivas = new Long(0);
         this.investMayor = new Long(0);
 
@@ -211,6 +221,7 @@ public class CalificarControl extends Utilidades implements Serializable {
         this.totalInvest = new Long(0);
         this.totalActivProduct = new Long(0);
         this.total = new Long(0);
+        this.promedio = new Long(0);
 
         /**
          * LISTAS DE VARIABLES
@@ -360,18 +371,17 @@ public class CalificarControl extends Utilidades implements Serializable {
         }
 
         if (this.getSelectedAgente() != null && this.getSelectedAgente().getJefe()) {
-                this.totalActivProduct = (this.sumatoriaActProduct() * 50) / 60;
-                //this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;       
+            this.totalActivProduct = (this.sumatoriaActProduct() * 50) / 60;
+            //this.total = this.totalFlag + this.totalInvest + this.totalActivProduct;       
         } else {
             this.totalActivProduct = this.sumatoriaActProduct();
         }
-        this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+        this.setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+        //this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
     }
 
     private Long sumatoriaActProduct() {
         Long sumActivProduct = new Long(0);
-        System.out.println("Temp Activ Product: "+this.tmpActivProductivas);
-        System.out.println("Investiga Mayor 20: "+this.investMayor);
         sumActivProduct = this.tmpActivProductivas + this.investMayor;
         if (this.flagDos != null && this.flagDos) {
             sumActivProduct = sumActivProduct + 40;
@@ -382,16 +392,13 @@ public class CalificarControl extends Utilidades implements Serializable {
     private void calculoSumatoriaFlagracia() {
         this.sumatoriaFlagrancia = new Long(0);
         this.sumatoriaFlagrancia = this.sumaVerInf + this.sumaDesOper + this.tmpResultFlag;
-        System.out.println("CALCULO FLAGRANCIA");
-        System.out.println("SELECTED AGENTE: " + this.getSelectedAgente());
         if (this.getSelectedAgente() != null && this.getSelectedAgente().getJefe()) {
-            System.out.println("ES JEFE: " + this.getSelectedAgente().getJefe());
             this.totalFlag = (this.sumatoriaFlagrancia * 10) / 100;
         } else {
-            System.out.println("ENTRO SI NO ES JEFE EN CALCULO SUMATORIA FLAG");
             this.totalFlag = (this.sumatoriaFlagrancia * 20) / 100;
         }
-        this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+        this.setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+        //this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
     }
 
     private void calculoSumatoriaProyectoInvestigacion() {
@@ -404,19 +411,27 @@ public class CalificarControl extends Utilidades implements Serializable {
             this.investMayor = new Long(0);
         }
         this.totalInvest = (this.sumatoriaProyectoInvestig * 20) / 100;
-        this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+        this.setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
+        //this.getMatriz().setTotal(this.totalFlag + this.totalInvest + this.totalActivProduct);
     }
 
     public List<String> getAgencias() {
-        List<String> lista = new ArrayList<String>();
-        for (Agencia agencia : agenciaDAO.allAgencias()) {
-            lista.add(agencia.getNombre());
+        try {
+            List<String> lista = new ArrayList<String>();
+            for (Agencia agencia : agenciaDAO.allAgencias()) {
+                lista.add(agencia.getNombre());
+            }
+            return lista;
+        } catch (Exception e) {
         }
-        return lista;
+        return null;
     }
 
     public void jefeAgente() {
-        addSuccessMessage(this.getSelectedAgente().getJefe().toString());
+        if (this.getSelectedAgente().getJefe()) {
+            this.setPromedio(matrizDAO.promedioPorAgencia(this.getSelectedAgente(), añoActual(), mesActual()));
+            System.out.println("PROMEDIO EN MATRIZ: " + getPromedio());
+        }
     }
 
     public Matriz getMatriz() {
@@ -693,6 +708,14 @@ public class CalificarControl extends Utilidades implements Serializable {
 
     public void setAgente(Agente agente) {
         this.agente = agente;
+    }
+
+    public Long getPromedio() {
+        return promedio;
+    }
+
+    public void setPromedio(Long promedio) {
+        this.promedio = promedio;
     }
 
 }
